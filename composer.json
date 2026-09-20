@@ -1,6 +1,6 @@
 {
     "name": "ez-php/authorization",
-    "version": "2.4.10",
+    "version": "2.4.11",
     "description": "Gate and policy based authorization layer for the ez-php framework",
     "type": "library",
     "license": "MIT",
