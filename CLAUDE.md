@@ -175,8 +175,8 @@ Two things stay manual on purpose:
 - **`CLAUDE.md` part 1** — only the `# Package:` section is generated. Run
   `composer guidelines:sync` afterwards; baking a guidelines copy into the generator
   would recreate the drift the sync script exists to prevent.
-- **The host-port table below** (`--services` only) — editing it marks all ~40
-  `CLAUDE.md` copies as drifted at once, so the next `composer full` would fail for
+- **The host-port table below** (`--services` only) — editing it marks every
+  `CLAUDE.md` copy as drifted at once, so the next `composer full` would fail for
   a brand-new module. The generator prints which ports to claim instead.
 
 ### 4 — Docker scaffold
@@ -276,6 +276,7 @@ tests/
 
 ## Design Decisions and Constraints
 
+- **`mixed $subject` is deliberate.** Policies and ability callbacks take an object, a class-string (class-level checks such as `create`), or `null` — but plain `define()`d abilities may also be handed an id or array. `Gate`'s public signatures therefore stay `mixed`; only `resolvePolicy()` narrows (`is_object` / `is_string`). Tightening to `object|string|null` would be a breaking change for `strict_types` callers.
 - **Explicit policy registration** (`Gate::policy()`), no naming convention or auto-discovery — "no hidden magic".
 - **Default deny** everywhere (guest, unknown ability, missing policy method, non-`true` result).
 - **No role/permission schema** — consumes `UserInterface` only; `ez-php/auth` is unchanged (its `AuthorizableInterface` RBAC hooks are separate).
