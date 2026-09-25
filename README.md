@@ -65,12 +65,51 @@ Policy lookup accepts subclasses of the registered class. Only strict `true` res
 
 Place after `AuthMiddleware`; denied requests get `403`.
 
-```php
-Route::get('/posts/create', $handler)
-    ->middleware(new CanMiddleware($gate, 'create', Post::class));
+Register an alias once, then attach it with the ability — and optionally a string
+subject — as parameters (`can:ability[,subject]`). The container builds `CanMiddleware`
+with the bound `Gate`; the parameters are passed on each request:
 
-// Per-request subject:
-new CanMiddleware($gate, 'update', fn (RequestInterface $r): ?Post => Post::find($r->param('id')));
+```php
+use EzPhp\Authorization\CanMiddleware;
+
+// before bootstrap (e.g. public/index.php)
+$app->middlewareAlias('can', CanMiddleware::class);
+
+// routes/web.php
+$router->get('/posts/create', $handler)->middleware('can:create,App\Entities\Post'); // class-level policy check
+$router->get('/dashboard', $handler)->middleware('can:view-dashboard');                // define()d ability, no subject
+```
+
+A string subject is handed to the Gate as-is, so it suits class-level checks (a
+class-string selects the policy). Registrations stay plain strings, so `route:cache`
+and `route:list` work unchanged.
+
+For a subject resolved per request — the post named by a route parameter — construct
+`CanMiddleware` with a resolver closure in a small wrapper middleware that receives
+the `Gate` and your repository:
+
+```php
+use EzPhp\Authorization\CanMiddleware;
+use EzPhp\Authorization\Gate;
+use EzPhp\Contracts\MiddlewareInterface;
+use EzPhp\Http\RequestInterface;
+use EzPhp\Http\ResponseInterface;
+
+final class CanUpdatePost implements MiddlewareInterface
+{
+    public function __construct(private readonly Gate $gate, private readonly PostRepository $posts)
+    {
+    }
+
+    public function handle(RequestInterface $request, callable $next): ResponseInterface
+    {
+        $subject = fn (RequestInterface $r): ?object => $this->posts->find((int) $r->param('id'));
+
+        return (new CanMiddleware($this->gate, 'update', $subject))->handle($request, $next);
+    }
+}
+
+$router->put('/posts/{id}', $handler)->middleware(CanUpdatePost::class);
 ```
 
 ## Not included
