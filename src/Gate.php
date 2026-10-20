@@ -7,6 +7,7 @@ namespace EzPhp\Authorization;
 use Closure;
 use EzPhp\Auth\UserInterface;
 use EzPhp\Contracts\ContainerInterface;
+use EzPhp\Contracts\GateInterface;
 
 /**
  * Class Gate
@@ -26,7 +27,7 @@ use EzPhp\Contracts\ContainerInterface;
  *
  * @package EzPhp\Authorization
  */
-final class Gate
+final class Gate implements GateInterface
 {
     /** @var array<string, Closure> */
     private array $abilities = [];

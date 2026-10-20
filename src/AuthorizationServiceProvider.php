@@ -6,6 +6,7 @@ namespace EzPhp\Authorization;
 
 use EzPhp\Auth\Auth;
 use EzPhp\Contracts\ContainerInterface;
+use EzPhp\Contracts\GateInterface;
 use EzPhp\Contracts\ServiceProvider;
 
 /**
@@ -33,6 +34,9 @@ final class AuthorizationServiceProvider extends ServiceProvider
             Gate::class,
             fn (ContainerInterface $app): Gate => new Gate($app, static fn () => Auth::user()),
         );
+
+        // The same singleton under the contract, for ez-php/framework's Controller::authorize().
+        $this->app->bind(GateInterface::class, fn (ContainerInterface $app): Gate => $app->make(Gate::class));
     }
 
     /**

@@ -7,6 +7,7 @@ namespace Tests;
 use EzPhp\Auth\Auth;
 use EzPhp\Authorization\AuthorizationServiceProvider;
 use EzPhp\Authorization\Gate;
+use EzPhp\Contracts\GateInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use Tests\Support\AuthorizationFakeContainer;
@@ -40,5 +41,19 @@ final class AuthorizationServiceProviderTest extends TestCase
         Auth::login(new AuthorizationTestUser(1));
 
         self::assertTrue($gate->allows('ping'));
+    }
+
+    public function testBindsGateInterfaceToTheSameGate(): void
+    {
+        $container = new AuthorizationFakeContainer();
+        (new AuthorizationServiceProvider($container))->register();
+
+        self::assertTrue($container->wasBound(GateInterface::class));
+
+        // Resolved through make(Gate::class), so the framework container's singleton cache
+        // hands out the one Gate the application registered its policies on.
+        $gate = new Gate($container, static fn () => null);
+        $container->instance(Gate::class, $gate);
+        self::assertSame($gate, $container->make(GateInterface::class));
     }
 }

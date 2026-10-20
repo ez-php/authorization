@@ -270,10 +270,10 @@ When adding a new module, add `"$ROOT/modules/<name>"` to the `PACKAGES` array i
 
 ```
 src/
-  Gate.php                        — ability/policy/before-callback registry and checks (allows, can, denies, authorize, forUser)
+  Gate.php                        — ability/policy/before-callback registry and checks (allows, can, denies, authorize, forUser); implements ez-php/contracts' GateInterface
   CanMiddleware.php               — route middleware (`can:ability[,subject]`): 403 unless the Gate allows an ability (optional static/resolved subject)
   AuthorizationException.php      — thrown by Gate::authorize(); code 403
-  AuthorizationServiceProvider.php — binds Gate (singleton), user resolved via Auth::user()
+  AuthorizationServiceProvider.php — binds Gate (singleton), user resolved via Auth::user(); GateInterface → the same Gate
 tests/
   Support/                        — Authorization* fakes and fixtures (unique names: shared Tests\ namespace)
 ```
@@ -295,7 +295,7 @@ tests/
 - **Default deny** everywhere (guest, unknown ability, missing policy method, non-`true` result).
 - **No role/permission schema** — consumes `UserInterface` only; `ez-php/auth` is unchanged (its `AuthorizableInterface` RBAC hooks are separate).
 - Depends on `ez-php/auth`, `ez-php/contracts`, `ez-php/http` — not on `ez-php/framework`, hence `AuthorizationException` extends `EzPhpException`, not `HttpException`; apps map it to 403 in their handler.
-- A `Controller::authorize()` helper would be a framework-core change and is deliberately not part of this module (needs a separate decision).
+- **`Controller::authorize()` lives in the framework, against `GateInterface`.** `Gate` implements `ez-php/contracts`' `GateInterface` (`allows()`), and the provider binds the interface to the same singleton. `ez-php/framework`'s `Controller::authorize(?GateInterface $gate, $ability, $subject)` throws a 403 `ForbiddenException` on deny and a clear `ApplicationException` without a gate — so the framework stays usable without this module and never imports it.
 - Gate holds per-instance state (registrations); under concurrent runtimes the user resolver reads `Auth`'s static state — same caveat as `Auth`.
 
 ---
@@ -316,5 +316,5 @@ tests/
 |---|---|
 | Authentication, login, tokens, `Auth::can()`/`hasRole()` | `ez-php/auth` |
 | Role/permission tables and models | the application |
-| `Controller::authorize()` helper | `ez-php/framework` (separate decision) |
+| `Controller::authorize()` helper | `ez-php/framework` (`Controller::authorize()`, via `GateInterface`) |
 | Two-factor gating | `ez-php/two-factor` |

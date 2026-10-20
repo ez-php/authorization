@@ -61,6 +61,28 @@ $gate->forUser($other)->allows(…); // check for a different user
 
 Policy lookup accepts subclasses of the registered class. Only strict `true` results allow.
 
+### In controllers
+
+`Gate` implements `EzPhp\Contracts\GateInterface`, which the provider binds too, so
+`ez-php/framework` controllers can use the base controller's `authorize()` helper (403 on deny):
+
+```php
+use EzPhp\Contracts\GateInterface;
+use EzPhp\Controller\Controller;
+
+final class PostController extends Controller
+{
+    public function __construct(private readonly ?GateInterface $gate = null) {}
+
+    public function update(Request $request, Post $post): Response
+    {
+        $this->authorize($this->gate, 'update', $post); // ForbiddenException (403) when denied
+
+        // ...
+    }
+}
+```
+
 ## Middleware
 
 Place after `AuthMiddleware`; denied requests get `403`.
