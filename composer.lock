@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ce7b9d6a27357c7078a753d1815db670",
+    "content-hash": "706b09b75d07bf82b9d30a02d5a98ec3",
     "packages": [
         {
             "name": "ez-php/auth",

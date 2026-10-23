@@ -134,6 +134,14 @@ final class CanUpdatePost implements MiddlewareInterface
 $router->put('/posts/{id}', $handler)->middleware(CanUpdatePost::class);
 ```
 
+## Generating a policy
+
+```bash
+php ez make:policy PostPolicy --model=Post
+```
+
+writes `app/Policies/PostPolicy.php` with deny-by-default `view`/`create`/`update`/`delete` methods (typed to `App\Entities\Post` with `--model`) and prints the `$gate->policy(...)` line to add to your provider — registration stays explicit.
+
 ## Not included
 
 Roles, permissions, database storage, and any change to `ez-php/auth` (its own `Auth::can()`/`hasRole()` RBAC hooks are independent).

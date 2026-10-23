@@ -274,12 +274,14 @@ src/
   Gate.php                        — ability/policy/before-callback registry and checks (allows, can, denies, authorize, forUser); implements ez-php/contracts' GateInterface
   CanMiddleware.php               — route middleware (`can:ability[,subject]`): 403 unless the Gate allows an ability (optional static/resolved subject)
   AuthorizationException.php      — thrown by Gate::authorize(); code 403
-  AuthorizationServiceProvider.php — binds Gate (singleton), user resolved via Auth::user(); GateInterface → the same Gate
+  AuthorizationServiceProvider.php — binds Gate (singleton), user resolved via Auth::user(); GateInterface → the same Gate; registers make:policy
+  Console/MakePolicyCommand.php   — `make:policy <Name> [--model=Entity]`: writes app/Policies/<Name>.php (view/create/update/delete stubs)
 tests/
   Support/                        — Authorization* fakes and fixtures (unique names: shared Tests\ namespace)
   AuthorizationGateTest.php  — Covers Gate
   AuthorizationServiceProviderTest.php  — Covers AuthorizationServiceProvider
   CanMiddlewareTest.php  — Covers CanMiddleware
+  Console/MakePolicyCommandTest.php — model-typed and untyped stubs (php -l), invalid names, existing file
 ```
 
 ---
@@ -295,7 +297,7 @@ tests/
 ## Design Decisions and Constraints
 
 - **`mixed $subject` is deliberate.** Policies and ability callbacks take an object, a class-string (class-level checks such as `create`), or `null` — but plain `define()`d abilities may also be handed an id or array. `Gate`'s public signatures therefore stay `mixed`; only `resolvePolicy()` narrows (`is_object` / `is_string`). Tightening to `object|string|null` would be a breaking change for `strict_types` callers.
-- **Explicit policy registration** (`Gate::policy()`), no naming convention or auto-discovery — "no hidden magic".
+- **Explicit policy registration** (`Gate::policy()`), no naming convention or auto-discovery — "no hidden magic". `make:policy` follows suit: it writes the class and prints the `$gate->policy(...)` line, but never registers it. `ez-php/console` is a soft dependency (`suggest` + `require-dev`) for the command.
 - **Default deny** everywhere (guest, unknown ability, missing policy method, non-`true` result).
 - **No role/permission schema** — consumes `UserInterface` only; `ez-php/auth` is unchanged (its `AuthorizableInterface` RBAC hooks are separate).
 - Depends on `ez-php/auth`, `ez-php/contracts`, `ez-php/http` — not on `ez-php/framework`, hence `AuthorizationException` extends `EzPhpException`, not `HttpException`; apps map it to 403 in their handler.

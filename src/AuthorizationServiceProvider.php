@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EzPhp\Authorization;
 
 use EzPhp\Auth\Auth;
+use EzPhp\Authorization\Console\MakePolicyCommand;
 use EzPhp\Contracts\ContainerInterface;
 use EzPhp\Contracts\GateInterface;
 use EzPhp\Contracts\ServiceProvider;
@@ -40,9 +41,11 @@ final class AuthorizationServiceProvider extends ServiceProvider
     }
 
     /**
-     * Nothing to boot — policies are registered by the application.
+     * Registers `make:policy`; policies themselves are registered by the application.
      */
     public function boot(): void
     {
+        // Needs ez-php/console (a suggest); registered by class name, loaded only when run.
+        $this->registerCommand(MakePolicyCommand::class);
     }
 }
