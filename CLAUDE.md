@@ -277,6 +277,9 @@ src/
   AuthorizationServiceProvider.php — binds Gate (singleton), user resolved via Auth::user(); GateInterface → the same Gate
 tests/
   Support/                        — Authorization* fakes and fixtures (unique names: shared Tests\ namespace)
+  AuthorizationGateTest.php  — Covers Gate
+  AuthorizationServiceProviderTest.php  — Covers AuthorizationServiceProvider
+  CanMiddlewareTest.php  — Covers CanMiddleware
 ```
 
 ---

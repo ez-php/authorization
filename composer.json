@@ -26,7 +26,7 @@
     },
     "require": {
         "php": "^8.5",
-        "ez-php/contracts": "^2.0",
+        "ez-php/contracts": "^2.5.9",
         "ez-php/http": "^2.0",
         "ez-php/auth": "^2.0"
     },
