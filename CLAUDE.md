@@ -277,7 +277,8 @@ src/
   AuthorizationServiceProvider.php — binds Gate (singleton), user resolved via Auth::user(); GateInterface → the same Gate; registers make:policy
   Console/MakePolicyCommand.php   — `make:policy <Name> [--model=Entity]`: writes app/Policies/<Name>.php (view/create/update/delete stubs)
 tests/
-  Support/                        — Authorization* fakes and fixtures (unique names: shared Tests\ namespace)
+  TestCase.php                    — base test case for plain unit tests
+  Support/                        — Authorization* fakes and fixtures (AuthorizationFakeContainer, AuthorizationTestUser, AuthorizationTestPost, AuthorizationTestDraftPost, AuthorizationTestPostPolicy) (unique names: shared Tests\ namespace)
   AuthorizationGateTest.php  — Covers Gate
   AuthorizationServiceProviderTest.php  — Covers AuthorizationServiceProvider
   CanMiddlewareTest.php  — Covers CanMiddleware
