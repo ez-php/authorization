@@ -125,6 +125,9 @@ final readonly class MakePolicyCommand implements CommandInterface
              */
             final class $name
             {
+                /**
+                 * Whether the user may view the subject.
+                 */
                 public function view(UserInterface \$user, $subject): bool
                 {
                     return false;
@@ -138,11 +141,17 @@ final readonly class MakePolicyCommand implements CommandInterface
                     return false;
                 }
 
+                /**
+                 * Whether the user may update the subject.
+                 */
                 public function update(UserInterface \$user, $subject): bool
                 {
                     return false;
                 }
 
+                /**
+                 * Whether the user may delete the subject.
+                 */
                 public function delete(UserInterface \$user, $subject): bool
                 {
                     return false;

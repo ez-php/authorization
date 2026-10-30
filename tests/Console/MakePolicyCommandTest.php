@@ -72,6 +72,8 @@ final class MakePolicyCommandTest extends TestCase
         $this->assertStringContainsString('use App\\Entities\\Post;', $source);
         $this->assertStringContainsString('public function update(UserInterface $user, Post $subject): bool', $source);
         $this->assertStringContainsString('public function create(UserInterface $user, string $class): bool', $source);
+        // Generated code follows the guidelines: a docblock on every public method.
+        $this->assertSame(0, preg_match('/[^\/]\n\s*public function/', $source), 'public method without a docblock');
         $this->assertValidPhp($file);
     }
 
